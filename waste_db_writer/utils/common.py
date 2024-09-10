@@ -32,8 +32,9 @@ def mappig_delivery(delivery_id, region:str=''):
     
     return f'{delivery_id}: {region}' if region else f'{delivery_id}'
 
-def get_box_info():
-    edge_box_id = os.environ.get('EDGE_BOX_ID')
+def get_box_info(edge_box_id=None):
+    if edge_box_id is None:
+        edge_box_id = os.environ.get('EDGE_BOX_ID')
     try:
         edge_box = EdgeBoxInfo.objects.get(edge_box_id=edge_box_id)
     except:

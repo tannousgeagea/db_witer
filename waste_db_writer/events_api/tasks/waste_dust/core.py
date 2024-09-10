@@ -42,7 +42,7 @@ def save_results_into_database(self, **kwargs):
     data: dict = {}
     
     info = kwargs
-    edge_box = get_box_info()
+    edge_box = get_box_info(edge_box_id=info.get('EDGE_BOX_ID'))
     suc, _ = save_waste_dust(info, edge_box=edge_box)
 
     if not suc:

@@ -15,7 +15,7 @@ def update_waste_impurity(objects, edge_box):
             timestamp = datetime.strptime(timestamp, DATETIME_FORMAT).replace(tzinfo=timezone.utc)
         
         for i in range(len(objects.get('object_uid', []))):
-            waste_segment = WasteSegments.objects.get(object_uid=objects.get('object_uid')[i])
+            waste_segment = WasteSegments.objects.get(object_uid=objects.get('object_uid')[i], edge_box=edge_box)
             
             waste_impurity = WasteImpurity()
             waste_impurity.edge_box = edge_box
@@ -52,7 +52,7 @@ def save_results_into_database(self, **kwargs):
     data: dict = {}
     
     info = kwargs
-    edge_box = get_box_info()
+    edge_box = get_box_info(edge_box_id=info.get('EDGE_BOX_ID'))
     suc = update_waste_impurity(objects=info, edge_box=edge_box)
     
     if not suc:

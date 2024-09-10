@@ -31,7 +31,7 @@ def save_waste_segments(objects, edge_box):
                 meta_info=objects.get('meta_info'),
                 
             ) for i in range(len(objects.get('object_uid', []))) 
-            if not WasteSegments.objects.filter(object_uid=objects.get('object_uid')[i]).exists()
+            if not WasteSegments.objects.filter(object_uid=objects.get('object_uid')[i], edge_box=edge_box).exists()
         ]
 
         WasteSegments.objects.bulk_create(waste_segments)
@@ -77,7 +77,7 @@ def save_results_into_database(self, **kwargs):
     data: dict = {}
     
     info = kwargs
-    edge_box = get_box_info()
+    edge_box = get_box_info(edge_box_id=info.get('EDGE_BOX_ID'))
     suc, waste_segments = save_waste_segments(info, edge_box=edge_box)
 
     if not suc:

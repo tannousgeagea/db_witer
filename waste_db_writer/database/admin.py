@@ -15,18 +15,29 @@ class EdgeBoxInfoAdmin(admin.ModelAdmin):
     
 class WasteSegmentsAdmin(admin.ModelAdmin):
     list_display = (
-        'edge_box', 'timestamp', 'created_at', 'object_uid', 
-        'object_tracker_id', 'confidence_score', 'object_area', 
-        'object_length', 'img_id', 'img_file', 'model_name', 'model_tag'
+        'edge_box', 'timestamp', 'object_uid', 
+        'object_tracker_id', 'confidence_score_display', 'object_area_display', 
+        'object_length_display', 'model_name', 'model_tag'
     )
     search_fields = ('object_uid', 'model_name', 'model_tag')
     list_filter = ('timestamp', 'created_at')
+    
+    def confidence_score_display(self, obj):
+        return f"{obj.confidence_score:.2f}"  # Rounds to 2 decimal places
+    confidence_score_display.short_description = 'Confidence Score'
+
+    def object_area_display(self, obj):
+        return f"{obj.object_area:.3f}"  # Rounds to 2 decimal places
+    object_area_display.short_description = 'Object Area'
+
+    def object_length_display(self, obj):
+        return f"{obj.object_length:.2f}"  # Rounds to 2 decimal places
+    object_length_display.short_description = 'Object Length'
 
 
 class WasteImpurityAdmin(admin.ModelAdmin):
     list_display = (
         'edge_box', 'timestamp', 'created_at', 'object_uid', 
-        'object_tracker_id', 'is_long', 'is_problematic', 
         'confidence_score', 'severity_level', 'model_name', 'model_tag'
     )
     search_fields = ('object_uid__object_uid', 'severity_level', 'model_name', 'model_tag')
