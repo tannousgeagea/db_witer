@@ -207,7 +207,6 @@ def event_map(event_type):
         raise HTTPException(status_code=400, detail=f'Failed to map event_type {event_type} to event: {err}')
     
 def rois():
-    
     rois = {
         'Tor06': {'coords': (0.33711753785610205, 0.810818150639534, 0.17714610434087613, 0.20032455643177516, 0.6800097633552488, 0.19869765481269722, 0.5664992772185093, 0.8201740733004742), 'color': (0, 255, 0)},  # Green
     }

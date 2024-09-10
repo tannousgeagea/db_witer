@@ -114,17 +114,16 @@ def get_segments_data(response: Response, from_date:datetime=None, to_date:datet
         total_record = len(waste_segments)
         
         for wi in waste_segments:
-            
             xyn = wi.object_polygon
             xyxyn = poly2xyxy(xyn)
-            region = map_object_to_gate(xyxyn=xyxyn, rois=rois())
             
             row = {
                 'object_uid': wi.object_uid,
                 'timestamp': wi.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                 'object_length': wi.object_length,
                 'object_area': wi.object_area,
-                'region': region,
+                'xyn': xyn,
+                'xyxyn': xyxyn,
             }
             
             rows.append(row)
