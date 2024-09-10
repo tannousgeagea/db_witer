@@ -1,0 +1,7 @@
+*.pyc*
+*__pycache__*
+*log*
+*run*
+.docker-conf
+db.sqlite3
+.env
