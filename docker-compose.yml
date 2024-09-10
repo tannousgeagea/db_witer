@@ -14,7 +14,14 @@ services:
         userid: ${userid}
         group: ${group}
         groupid: ${groupid}
-    network_mode: host
+    networks:
+      - internal
+    ports:
+      - ${INET_HTTP_SERVER_PORT}:${INET_HTTP_SERVER_PORT}
+      - ${EVENT_API_PORT}:${EVENT_API_PORT}
+      - ${DJANGO_ADMIN_PORT}:${DJANGO_ADMIN_PORT}
+      - ${FLOWER_PORT}:${FLOWER_PORT}
+      - ${DATA_API_PORT}:${DATA_API_PORT}
     env_file: .env
     restart: unless-stopped
     volumes:
@@ -30,10 +37,10 @@ services:
       - "${RABBITMQ_PORT}:5672"
       - "${RABBITMQ_INTERFACE_PORT}:15672"
     volumes:
-      - .docker-conf/rabbitmq/data/:/var/lib/rabbitmq
-      - .docker-conf/rabbitmq/log/:/var/log/rabbitmq
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
-      - rabbitmq-waste-db-writer
+      - internal
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_VHOST: "/"
@@ -45,6 +52,8 @@ services:
     image: "redis:alpine"
     container_name: waste-db-writer-redis
     restart: "always"
+    networks:
+      - internal
     ports:
       - "${REDIS_PORT}:6379"
       - "${REDIS_INT_PORT}:16379"
@@ -54,7 +63,8 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
 
 networks:
-  rabbitmq-waste-db-writer:
+  internal:
+    name: internal
     driver: bridge 
 
 volumes:

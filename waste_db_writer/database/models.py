@@ -36,13 +36,15 @@ class WasteSegments(models.Model):
     timestamp = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     object_uid = models.CharField(max_length=255)
+    event_uid = models.CharField(max_length=255, default=object_uid)
+    delivery_id = models.CharField(max_length=255, null=True, blank=True)
     object_tracker_id = models.IntegerField()
     object_polygon = models.JSONField()
     confidence_score = models.FloatField(max_length=100)
     object_area = models.FloatField(max_length=100)
     object_length = models.FloatField(max_length=100)
     img_id = models.CharField(max_length=255, null=True, blank=True)
-    img_file = models.ImageField(upload_to='images/', null=True, blank=True)
+    img_file = models.CharField(null=True, blank=True)
     model_name = models.CharField(max_length=255)
     model_tag = models.CharField(max_length=255)
     meta_info = models.JSONField(null=True, blank=True)
@@ -67,6 +69,7 @@ class WasteImpurity(models.Model):
     is_problematic = models.BooleanField(default=False)
     confidence_score = models.FloatField()
     severity_level = models.IntegerField()
+    object_coordinates = models.JSONField(null=True, blank=True)
     img_id = models.CharField(max_length=255, default=object_uid)
     img_file = models.CharField(max_length=255)
     model_name = models.CharField(max_length=255)
@@ -78,7 +81,7 @@ class WasteImpurity(models.Model):
         verbose_name_plural = 'Waste Impurity'
         
     def __str__(self):
-        return f"{self.object_uid}, {self.is_problematic}"
+        return f"{self.object_uid.object_uid}: {self.object_uid.object_length}"
     
 class WasteMaterial(models.Model):
     edge_box = models.ForeignKey(EdgeBoxInfo, on_delete=models.CASCADE)
@@ -101,7 +104,7 @@ class WasteMaterial(models.Model):
         verbose_name_plural = 'Waste Material'
         
     def __str__(self):
-        return f"{self.object_uid}, {self.object_material_type}"
+        return f"{self.object_uid.object_uid}: {self.object_material_type}"
     
 
 class WasteDust(models.Model):
