@@ -1,0 +1,62 @@
+version: '3.3'
+
+services:
+  # core
+  waste-db-writer:
+    image: wasteant/wasteant:waste-db-writer-service-ubuntu.20.04
+    container_name: waste-db-writer-core
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    build:
+      context: .
+      args:
+        user: ${user}
+        userid: ${userid}
+        group: ${group}
+        groupid: ${groupid}
+    network_mode: host
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - .:/home/$user/src
+    user: ${user}
+
+  # RabbitMQ Service
+  rabbitmq:
+    image: "rabbitmq:3-management-alpine"
+    container_name: waste-db-writer-rabbitmq
+    env_file: .env
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_INTERFACE_PORT}:15672"
+    volumes:
+      - .docker-conf/rabbitmq/data/:/var/lib/rabbitmq
+      - .docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq-waste-db-writer
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+  # redis
+  redis:
+    image: "redis:alpine"
+    container_name: waste-db-writer-redis
+    restart: "always"
+    ports:
+      - "${REDIS_PORT}:6379"
+      - "${REDIS_INT_PORT}:16379"
+    volumes:
+    - cache:/data
+    - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+
+networks:
+  rabbitmq-waste-db-writer:
+    driver: bridge 
+
+volumes:
+  cache:
+    driver: local
