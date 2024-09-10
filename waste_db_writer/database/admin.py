@@ -29,7 +29,7 @@ class WasteImpurityAdmin(admin.ModelAdmin):
         'object_tracker_id', 'is_long', 'is_problematic', 
         'confidence_score', 'severity_level', 'model_name', 'model_tag'
     )
-    search_fields = ('object_uid', 'severity_level', 'model_name', 'model_tag')
+    search_fields = ('object_uid__object_uid', 'severity_level', 'model_name', 'model_tag')
     list_filter = ('timestamp', 'created_at', 'is_long', 'is_problematic', 'severity_level')
     
 class WasteMaterialAdmin(admin.ModelAdmin):

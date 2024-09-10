@@ -64,8 +64,6 @@ RUN pip3 install flower
 RUN pip3 install requests
 RUN pip3 install grpcio
 RUN pip3 install grpcio-tools
-RUN pip3 install roslibpy
-RUN pip3 install cvbridge3
 RUN pip3 install opencv-python
 RUN pip3 install pillow
 RUN pip3 install tqdm
