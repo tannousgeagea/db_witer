@@ -27,6 +27,9 @@ services:
     volumes:
       - .:/home/$user/src
     user: ${user}
+    depends_on:
+      - rabbitmq
+      - postgres
 
   # RabbitMQ Service
   rabbitmq:
@@ -62,6 +65,20 @@ services:
     - ./redis.conf:/usr/local/etc/redis/redis.conf
     command: redis-server /usr/local/etc/redis/redis.conf
 
+  postgres:
+    image: postgres:latest
+    container_name: waste-db-writer-postgres
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: wasteantadmin@2024
+      POSTGRES_DB: waste_db
+    networks:
+     - internal
+    ports:
+      - "5129:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 networks:
   internal:
     name: internal
@@ -70,3 +87,4 @@ networks:
 volumes:
   cache:
     driver: local
+  postgres_data:
