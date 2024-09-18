@@ -49,12 +49,12 @@ def create_app() -> FastAPI:
         expose_headers=["X-Request-ID"],
     )
 
-    app.include_router(query_impurity.router)
-    app.include_router(query_segments.router)
-    app.include_router(query_dust.router)
-    app.include_router(query_hotspot.router)
+    # app.include_router(query_impurity.router)
+    # app.include_router(query_segments.router)
+    # app.include_router(query_dust.router)
+    # app.include_router(query_hotspot.router)
     app.include_router(query_alarms.router)
-    app.include_router(give_feecback.router)
+    # app.include_router(give_feecback.router)
     
     return app
 

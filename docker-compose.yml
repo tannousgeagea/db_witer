@@ -81,7 +81,6 @@ services:
 
 networks:
   internal:
-    name: internal
     driver: bridge 
 
 volumes:

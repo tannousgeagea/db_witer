@@ -20,6 +20,7 @@ from utils.common import event_map, DATETIME_FORMAT
 django.setup()
 from django.core.exceptions import ObjectDoesNotExist
 from database.models import PlantInfo, EdgeBoxInfo, WasteImpurity, WasteDust, WasteHotSpot
+from database.models import Metadata, MetadataColumn, MetadataLocalization, Filter, FilterItem, FilterItemLocalization, FilterLocalization
 
 class TimedRoute(APIRoute):
     def get_route_handler(self) -> Callable:
@@ -46,86 +47,115 @@ router = APIRouter(
 
 
 @router.api_route(
-    "/alarm/metadata", methods=["GET"], tags=["Alarms"]
+    "/alarm/metadata/{language}", methods=["GET"], tags=["Alarms"]
 )
-def get_alarm_metadata(response: Response, plant_id:str='gml-luh-001'):
+def get_alarm_metadata(response: Response, language:str="de", metadata_id:int=1):
     results = {}
     try:
-        
-        plant_info = PlantInfo.objects.get(plant_id=plant_id)
-        results = {
-            "metadata": {
-                "title": "Erkannte Auffälligkeiten",
-                "column": {
-                    # "delivery_id": {
-                    #     "title": "Anlieferung ID",
-                    #     "type": "string",
-                    #     "description": "ID der Anlieferung"
-                    # },
-                    "date": {
-                        "title": "Datum",
-                        "type": "string",
-                        "description": "Datum der Anlieferung"
-                    },
-                    "start": {
-                        "title": "Beginn",
-                        "type": "string",
-                        "description": "Beginn der Anlieferung"
-                    },
-                    "end": {
-                        "title": "Ende",
-                        "type": "string",
-                        "description": "Ende der Anlieferung"
-                    },
-                    "location": {
-                        "title": "Ort",
-                        "type": "string",
-                        "description": "Ort der Auffälligkeit"
-                    },
-                    "event_name": {
-                        "title": "Ereignis",
-                        "type": "string",
-                        "description": "Art der Auffälligkeit",
-                    },
-                    "severity_level": {
-                        "title": "Grad",
-                        "type": "string",
-                        "description": "Grad der Auffälligkeit"
-                    },
-                },
+        if not MetadataColumn.objects.filter(metadata_id=metadata_id).exists():
+            results = {
+                "error": {
+                    "status_code": "not found",
+                    "status_description": f"Metadata ID {metadata_id} not found",
+                    "deatil": f"Metadata ID {metadata_id} not found",
+                }
+            }
+            
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return results
+
+        col = []
+        columns = MetadataColumn.objects.filter(metadata_id=metadata_id).select_related('metadata').prefetch_related('localizations')        
+        for column in columns:
+            localization = column.localizations.filter(language=language).first()
+            if not localization:
+                results = {
+                    "error": {
+                        "status_code": "not found",
+                        "status_description": f"language {language} not found",
+                        "deatil": f"language {language} not found",
+                    }
+                }
                 
-                "filters": {
-                    "event": {
-                        "title": "Auffälligkeit",
-                        "type": "enum",
-                        "desciption": "Filter nach der Art des Ereignisses, z.B. Störstoff",
-                        "items": {
-                            "all": "Alle",
-                            "impurity": "Störstoff",
-                            "dust": "Staub",
-                            "hotspot": "Hotspot",
-                        }
-                    },
-                    
-                    "severity_level": {
-                        "title": "Auffälligkeitsgrad",
-                        "type": "enum",
-                        "desciption": "Filter nach der Grad des Ereignisses, z.B. Niedrieg",
-                        "items": {
-                            1: "Niedrig",
-                            2: "Mittel",
-                            3: "Hoch",
+                response.status_code = status.HTTP_404_NOT_FOUND
+                return results
+            
+            col.append(
+                {
+                    column.column_name: {
+                        "title": localization.title,
+                        "type": column.type,
+                        "description": localization.description                        
+                    }
+
+                }
+            )
+            
+        _filters = []
+        filters = Filter.objects.filter(is_active=True).prefetch_related('localizations')
+        for fil in filters:
+            localization = fil.localizations.filter(language=language).first()
+            if not localization:
+                results = {
+                    "error": {
+                        "status_code": "not found",
+                        "status_description": f"language {language} for filter {fil.filter_name} not found",
+                        "deatil": f"language {language} for filter {fil.filter_name} not found",
+                    }
+                }
+                
+                response.status_code = status.HTTP_404_NOT_FOUND
+                return results 
+        
+            if not FilterItem.objects.filter(filter=fil, is_active=True).exists():
+                results = {
+                    "error": {
+                        "status_code": "not found",
+                        "status_description": f" filter items for {fil.filter_name} not found",
+                        "deatil": f"filter item for {fil.filter_name} not found",
+                    }
+                }
+                
+                response.status_code = status.HTTP_404_NOT_FOUND
+                return results 
+        
+            filter_items = FilterItem.objects.filter(filter=fil, is_active=True).prefetch_related('localizations')
+            items = {}
+            for fil_item in filter_items:
+                filter_item_loc = fil_item.localizations.filter(language=language).first()
+                if not filter_item_loc:
+                    results = {
+                        "error": {
+                            "status_code": "not found",
+                            "status_description": f"language {language} for filter item {fil_item.item_key} not found",
+                            "deatil": f"language {language} for filter item {fil_item.item_key} not found",
                         }
                     }
-                },
-                
-                "primary_key": "event_uid",
-            }
+                    
+                    response.status_code = status.HTTP_404_NOT_FOUND
+                    return results 
+
+                items[fil_item.item_key] = filter_item_loc.item_value
+            
+            _filters.append({
+                fil.filter_name: {
+                    "title": localization.title,
+                    "type": fil.type,
+                    "description": localization.description,
+                    "items": items,
+                }
+            })
+        
+        results = {
+            "columns": col,
+            "filters": _filters,
+            "primary_key": Metadata.objects.get(id=metadata_id).primary_key
         }
         
         results['status_code'] = "ok"
         results["detail"] = "data retrieved successfully"
         results["status_description"] = "OK"
+    
         
     except ObjectDoesNotExist as e:
         results['error'] = {
@@ -181,7 +211,7 @@ descrption = """
 @router.api_route(
     "/alarm", methods=["GET"], tags=["Alarms"], description=descrption
 )
-def get_alarm(response: Response, filters:str="", plant_id:str='gml-luh-001', from_date:datetime=None, to_date:datetime=None, items_per_page:int=15, page:int=1):
+def get_alarm(response: Response, filters:str="", from_date:datetime=None, to_date:datetime=None, items_per_page:int=15, page:int=1):
     results = {}
     try:
         today = datetime.today()
@@ -212,7 +242,6 @@ def get_alarm(response: Response, filters:str="", plant_id:str='gml-luh-001', fr
             response.status_code = status.HTTP_400_BAD_REQUEST    
             return results
         
-        # plant_info = PlantInfo.objects.get(plant_id=plant_id)
         if len(filters):
             filters = filters.replace(" ", "")
             filters = {s.split('=')[0]: s.split('=')[1].split(',') for s in filters.split('&') if len(s)}
@@ -282,6 +311,14 @@ def get_alarm(response: Response, filters:str="", plant_id:str='gml-luh-001', fr
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     
     return results
+
+
+
+
+
+
+
+
 
 
 descrption = """
