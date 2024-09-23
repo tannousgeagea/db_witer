@@ -19,6 +19,12 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
+
+admin.site.site_header = "Waste Classification DB Writer"
+admin.site.site_title = "waste db"
+admin.site.index_title = "Welcome to Waste Classification DB"
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]

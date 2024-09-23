@@ -11,12 +11,16 @@ from fastapi.responses import JSONResponse
 from fastapi.exception_handlers import http_exception_handler
 from asgi_correlation_id import correlation_id
 
-from data_api.routers.waste_impurity import query_impurity
-from data_api.routers.waste_dust import query_dust
-from data_api.routers.waste_hotspot import query_hotspot
-from data_api.routers.waste_alarms import query_alarms
-from data_api.routers.waste_segments import query_segments
-from data_api.routers.waste_feedback import give_feecback
+# from data_api.routers.waste_impurity import query_impurity
+# from data_api.routers.waste_dust import query_dust
+# from data_api.routers.waste_hotspot import query_hotspot
+# from data_api.routers.waste_segments import query_segments
+# from data_api.routers.waste_feedback import give_feecback
+
+from data_api.routers.waste_alarms import alarm_endpoint
+from data_api.routers.waste_impurity import impurity_endpoint
+from data_api.routers.waste_segments import segments_endpoint
+from data_api.routers.waste_feedback import feecback_endpoint
 
 def create_app() -> FastAPI:
     tags_meta = [
@@ -49,12 +53,10 @@ def create_app() -> FastAPI:
         expose_headers=["X-Request-ID"],
     )
 
-    # app.include_router(query_impurity.router)
-    # app.include_router(query_segments.router)
-    # app.include_router(query_dust.router)
-    # app.include_router(query_hotspot.router)
-    app.include_router(query_alarms.router)
-    # app.include_router(give_feecback.router)
+    app.include_router(alarm_endpoint.router)
+    app.include_router(impurity_endpoint.router)
+    app.include_router(segments_endpoint.router)
+    app.include_router(feecback_endpoint.router)
     
     return app
 
