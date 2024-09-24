@@ -11,12 +11,6 @@ from fastapi.responses import JSONResponse
 from fastapi.exception_handlers import http_exception_handler
 from asgi_correlation_id import correlation_id
 
-# from data_api.routers.waste_impurity import query_impurity
-# from data_api.routers.waste_dust import query_dust
-# from data_api.routers.waste_hotspot import query_hotspot
-# from data_api.routers.waste_segments import query_segments
-# from data_api.routers.waste_feedback import give_feecback
-
 from data_api.routers.waste_alarms import alarm_endpoint
 from data_api.routers.waste_impurity import impurity_endpoint
 from data_api.routers.waste_segments import segments_endpoint

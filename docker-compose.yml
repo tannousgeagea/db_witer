@@ -50,21 +50,6 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
 
-  # redis
-  redis:
-    image: "redis:alpine"
-    container_name: waste-db-writer-redis
-    restart: "always"
-    networks:
-      - internal
-    ports:
-      - "${REDIS_PORT}:6379"
-      - "${REDIS_INT_PORT}:16379"
-    volumes:
-    - cache:/data
-    - ./redis.conf:/usr/local/etc/redis/redis.conf
-    command: redis-server /usr/local/etc/redis/redis.conf
-
   postgres:
     image: postgres:latest
     container_name: waste-db-writer-postgres
@@ -74,8 +59,6 @@ services:
       POSTGRES_DB: waste_db
     networks:
      - internal
-    ports:
-      - "5129:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -84,6 +67,4 @@ networks:
     driver: bridge 
 
 volumes:
-  cache:
-    driver: local
   postgres_data:
