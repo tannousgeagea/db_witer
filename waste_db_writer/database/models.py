@@ -5,6 +5,7 @@ class PlantInfo(models.Model):
     plant_id = models.CharField(max_length=255)
     plant_name = models.CharField(max_length=255)
     plant_location = models.CharField(max_length=255)
+    domain = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     meta_info = models.JSONField(null=True, blank=True)
     
