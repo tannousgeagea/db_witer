@@ -7,9 +7,6 @@ from database.models import PlantInfo, EdgeBoxInfo, WasteSegments, WasteImpurity
 from utils.common import get_box_info, DATETIME_FORMAT
 from utils.sync.core import sync_to_alarm
 
-
-base_api = BaseAPI()
-
 def update_waste_impurity(objects, edge_box):
     success = False
     try:
