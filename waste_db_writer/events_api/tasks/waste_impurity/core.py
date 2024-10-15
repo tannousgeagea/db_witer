@@ -1,10 +1,14 @@
+import os
 import django
 django.setup()
 from celery import shared_task
 from datetime import datetime, timezone
 from database.models import PlantInfo, EdgeBoxInfo, WasteSegments, WasteImpurity
 from utils.common import get_box_info, DATETIME_FORMAT
+from utils.sync.core import sync_to_alarm
 
+
+base_api = BaseAPI()
 
 def update_waste_impurity(objects, edge_box):
     success = False
@@ -38,6 +42,11 @@ def update_waste_impurity(objects, edge_box):
             waste_segment.img_id = objects.get('img_id')
             waste_segment.img_file = objects.get('img_file')
             waste_segment.save()
+
+            sync_to_alarm(
+                url=f"http://{os.getenv('EDGE_CLOUD_SYNC_HOST', '0.0.0.0')}:{os.getenv('EDGE_CLOUD_SYNC_PORT', '27092')}/api/v1/data",
+                model=waste_impurity
+            )
         
         success = True
     except Exception as err:
