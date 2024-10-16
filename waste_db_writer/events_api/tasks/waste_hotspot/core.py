@@ -5,6 +5,7 @@ from celery import shared_task
 from datetime import datetime, timezone
 from database.models import WasteHotSpot
 from utils.common import get_box_info, DATETIME_FORMAT
+from utils.sync.core import sync_to_alarm
 
 def save_waste_hotspot(event, edge_box):
     success = False
@@ -19,6 +20,7 @@ def save_waste_hotspot(event, edge_box):
             timestamp = timestamp,
             event_uid = event.get('event_uid'),
             delivery_id = event.get('delivery_id'),
+            location = event.get('location'),
             confidence_score = event.get('confidence_score'),
             severity_level=event.get('severity_level'),
             img_id = event.get('img_id'),
@@ -28,6 +30,11 @@ def save_waste_hotspot(event, edge_box):
             meta_info=event.get('meta_info'),
             )
 
+        sync_to_alarm(
+            url=f"http://{os.getenv('EDGE_CLOUD_SYNC_HOST', '0.0.0.0')}:{os.getenv('EDGE_CLOUD_SYNC_PORT', '27092')}/api/v1/data",
+            model=waste_hotspot
+        )
+        
         waste_hotspot.save()
         success = True
     except Exception as err:
