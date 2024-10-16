@@ -43,7 +43,8 @@ def update_waste_impurity(objects, edge_box):
 
             sync_to_alarm(
                 url=f"http://{os.getenv('EDGE_CLOUD_SYNC_HOST', '0.0.0.0')}:{os.getenv('EDGE_CLOUD_SYNC_PORT', '27092')}/api/v1/data",
-                model=waste_impurity
+                model=waste_impurity,
+                event_name='impurity',
             )
         
         success = True

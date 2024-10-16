@@ -4,7 +4,7 @@ from utils.common import DATETIME_FORMAT
 
 base_api = BaseAPI()
 
-def sync_to_alarm(url:str, model):
+def sync_to_alarm(url:str, model, event_name:str):
     try:
         base_api.post(
             url=url,
@@ -16,7 +16,7 @@ def sync_to_alarm(url:str, model):
                     "tenant_domain": model.edge_box.plant.domain,
                     "delivery_id": model.delivery_id if model.delivery_id else '',
                     "location": model.location if model.location is not None else 'bunker',
-                    "flag_type": "impurity",
+                    "flag_type": f"{event_name}",
                     "severity_level": str(model.severity_level),
                     "timestamp": model.timestamp.strftime(DATETIME_FORMAT),
                     "event_uid": model.event_uid,
