@@ -15,7 +15,7 @@ def sync_to_alarm(url:str, model):
                 "data": {
                     "tenant_domain": model.edge_box.plant.domain,
                     "delivery_id": model.delivery_id if model.delivery_id else '',
-                    "location": model.meta_info.get('region') if model.meta_info is not None else 'bunker',
+                    "location": model.location if model.location is not None else 'bunker',
                     "flag_type": "impurity",
                     "severity_level": str(model.severity_level),
                     "timestamp": model.timestamp.strftime(DATETIME_FORMAT),

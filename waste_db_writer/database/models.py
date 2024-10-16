@@ -39,6 +39,7 @@ class WasteSegments(models.Model):
     object_uid = models.CharField(max_length=255)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     object_tracker_id = models.IntegerField()
     object_polygon = models.JSONField()
     confidence_score = models.FloatField(max_length=100)
@@ -65,6 +66,7 @@ class WasteImpurity(models.Model):
     object_uid = models.OneToOneField(WasteSegments, on_delete=models.CASCADE)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     object_tracker_id = models.IntegerField()
     is_long = models.BooleanField(default=False)
     is_problematic = models.BooleanField(default=False)
@@ -93,6 +95,7 @@ class WasteImpurity(models.Model):
             timestamp=self.timestamp,
             event_uid=self.event_uid,
             delivery_id=self.delivery_id,
+            location=self.location,
             confidence_score=self.confidence_score,
             severity_level=self.severity_level,
             img_id=self.img_id,
@@ -109,6 +112,7 @@ class WasteMaterial(models.Model):
     object_uid = models.OneToOneField(WasteSegments, on_delete=models.CASCADE)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     object_tracker_id = models.IntegerField()
     object_material_type = models.CharField(max_length=255)
     confidence_score = models.FloatField()
@@ -132,6 +136,7 @@ class WasteDust(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     confidence_score = models.FloatField()
     severity_level = models.IntegerField()
     img_id = models.CharField(max_length=255)
@@ -156,6 +161,7 @@ class WasteDust(models.Model):
             timestamp=self.timestamp,
             event_uid=self.event_uid,
             delivery_id=self.delivery_id,
+            location=self.location,
             confidence_score=self.confidence_score,
             severity_level=self.severity_level,
             img_id=self.img_id,
@@ -172,6 +178,7 @@ class WasteHotSpot(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     confidence_score = models.FloatField()
     severity_level = models.IntegerField()
     img_id = models.CharField(max_length=255)
@@ -196,6 +203,7 @@ class WasteHotSpot(models.Model):
             timestamp=self.timestamp,
             event_uid=self.event_uid,
             delivery_id=self.delivery_id,
+            location=self.location,
             confidence_score=self.confidence_score,
             severity_level=self.severity_level,
             img_id=self.img_id,
@@ -212,6 +220,7 @@ class WasteAlarm(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     event_uid = models.CharField(max_length=255)
     delivery_id = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     confidence_score = models.FloatField()
     severity_level = models.IntegerField()
     img_id = models.CharField(max_length=255)

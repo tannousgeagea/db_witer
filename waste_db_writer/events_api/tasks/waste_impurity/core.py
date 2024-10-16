@@ -24,6 +24,7 @@ def update_waste_impurity(objects, edge_box):
             waste_impurity.object_uid = waste_segment
             waste_impurity.event_uid = objects.get('event_uid')
             waste_impurity.delivery_id =  objects.get('delivery_id') 
+            waste_impurity.location = objects.get('location')
             waste_impurity.is_problematic = True
             waste_impurity.is_long = True
             waste_impurity.object_tracker_id = waste_segment.object_tracker_id
