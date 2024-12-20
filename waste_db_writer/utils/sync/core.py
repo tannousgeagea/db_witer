@@ -36,6 +36,7 @@ def sync_to_alarm(url:str, model, event_name:str, meta_info=None):
                         "delivery_id": str(model.delivery_id),
                         "flag_type": "impurity",
                         "severity_level": str(model.severity_level),
+                        "event_uid": model.event_uid,
                     }
                 }
             )
